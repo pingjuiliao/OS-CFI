@@ -1,4 +1,4 @@
-FROM ubuntu:21.04
+FROM ubuntu:22.04
 
 COPY llvm-src /home/OS-CFI/llvm-src/
 COPY oscfi-lib-src /home/OS-CFI/oscfi-lib-src/
@@ -18,19 +18,25 @@ RUN chmod +x /home/OS-CFI/run.sh && \
 
 RUN apt-get -y update && \
     apt-get -y upgrade && \
-    apt-get -y install git cmake g++ python wget
+    apt-get -y install git cmake g++ python3-pip wget
 
-RUN apt-get -q -y install python3-pip
+RUN git clone https://github.com/radare/radare2.git && \
+    cd radare2 && \
+    ./sys/install.sh
 
-RUN cd /home/ && \
-    wget https://radare.mikelloc.com/get/4.5.0-git/radare2\_4.5.0-git\_amd64.deb && \
-    dpkg -i radare2\_4.5.0-git\_amd64.deb && \
-    pip3 install r2pipe && \
-    rm -f radare2\_4.5.0-git\_amd64.debrm radare2\_4.5.0-git\_amd64.deb
+RUN pip3 install r2pipe
+
+# RUN apt-get -q -y install python3-pip
+
+#RUN cd /home/ && \
+#    wget https://radare.mikelloc.com/get/4.5.0-git/radare2\_4.5.0-git\_amd64.deb && \
+#    dpkg -i radare2\_4.5.0-git\_amd64.deb && \
+#    pip3 install r2pipe && \
+#    rm -f radare2\_4.5.0-git\_amd64.debrm radare2\_4.5.0-git\_amd64.deb
 
 ENV OSCFI_PATH="/home/OS-CFI"
 
-RUN apt-get -y install linux-headers-5.11.0-17-generic csh gawk automake libtool bison flex libncurses5-dev && \
+RUN apt-get -y install linux-headers-5.15.0-75-generic csh gawk automake libtool bison flex libncurses5-dev && \
     apt-get -y install apt-file texinfo texi2html && \
     apt-file update && \
     apt-file search makeinfo
